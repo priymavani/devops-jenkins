@@ -3,15 +3,21 @@ agent any
 
 stages {
 
+    stage('Checkout') {
+        steps {
+            git url: 'https://github.com/priymavani/devops-jenkins/', branch: 'main'
+        }
+    }
+
     stage('Build') {
         steps {
-            sh 'javac CrudOperation.java'
+            bat 'javac CrudOperation.java'
         }
     }
 
     stage('Run') {
         steps {
-            sh 'echo 5 | java CrudOperation'
+            bat 'echo 5 | java CrudOperation'
         }
     }
 }
