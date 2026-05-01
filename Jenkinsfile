@@ -1,30 +1,40 @@
 pipeline {
     agent any
 
+    options {
+        timestamps()
+    }
+
     stages {
 
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                echo 'Cloning repository...'
+                checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Build & Test & Package') {
             steps {
-                echo 'Building project...'
+                bat 'mvnw.cmd clean package'
             }
         }
 
-        stage('Test') {
+        stage('Archive Artifact') {
             steps {
-                echo 'Testing project...'
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
+    }
 
-        stage('Deploy') {
-            steps {
-                echo 'Deploying project...'
-            }
+    post {
+        always {
+            junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+        }
+        success {
+            echo 'Build Successful!'
+        }
+        failure {
+            echo 'Build Failed!'
         }
     }
 }
